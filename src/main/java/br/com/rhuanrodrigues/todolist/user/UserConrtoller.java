@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @RestController
 @RequestMapping("/user")
@@ -18,12 +18,15 @@ public class UserConrtoller {
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody UserModel userModel) {
         UserModel findUser = this.userRepository.findByUsername(userModel.getUsername());
-        UserModel user = this.userRepository.save(userModel);
-
+        
         if(findUser != null) {
             return ResponseEntity.status(400).body("Username já existe !!");
         }
 
+        String passwordHashString = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+        userModel.setPassword(passwordHashString);
+
+        UserModel user = this.userRepository.save(userModel);
         return ResponseEntity.status(200).body(user);
     }
 }
