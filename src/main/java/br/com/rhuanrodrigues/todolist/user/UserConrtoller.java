@@ -17,16 +17,22 @@ public class UserConrtoller {
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody UserModel userModel) {
-        UserModel findUser = this.userRepository.findByUsername(userModel.getUsername());
-        
-        if(findUser != null) {
-            return ResponseEntity.status(400).body("Username já existe !!");
+
+        try {
+            UserModel findUser = this.userRepository.findByUsername(userModel.getUsername());
+            
+            if(findUser != null) {
+                return ResponseEntity.status(400).body("Username já existe !!");
+            }
+    
+            String passwordHashString = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+            userModel.setPassword(passwordHashString);
+    
+            UserModel user = this.userRepository.save(userModel);
+            return ResponseEntity.status(200).body(user);
+         
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage() + "\n" + e.getStackTrace());
         }
-
-        String passwordHashString = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
-        userModel.setPassword(passwordHashString);
-
-        UserModel user = this.userRepository.save(userModel);
-        return ResponseEntity.status(200).body(user);
     }
 }
