@@ -64,4 +64,23 @@ public class TaskModel {
     public void setIdUser(UUID idUser) {
         this.idUser = idUser;
     }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) throws Exception {
+        if(title.length() > 50) {
+            throw new Exception("Campo deve ter no máximo 50 caracteres");
+        }
+        this.title = title;
+    }
+
+    public UUID getId() {
+        return this.id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 }
